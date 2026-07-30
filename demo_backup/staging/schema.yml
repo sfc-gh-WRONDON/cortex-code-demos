@@ -1,0 +1,72 @@
+version: 2
+
+models:
+  - name: stg_transactions
+    description: Cleaned and standardized credit card transactions from mainframe batch data
+    columns:
+      - name: transaction_id
+        description: Unique transaction identifier
+        tests:
+          - not_null
+          - unique
+      - name: account_id
+        description: Account number foreign key
+        tests:
+          - not_null
+      - name: merchant_id
+        description: Merchant ID foreign key
+        tests:
+          - not_null
+      - name: transaction_type
+        description: Type of transaction
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Purchase', 'Refund', 'Cash Advance', 'Balance Transfer', 'Fee', 'Payment']
+      - name: card_network
+        description: Card network
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Visa', 'Mastercard', 'Discover', 'Amex']
+
+  - name: stg_accounts
+    description: Cleaned cardholder account master data from mainframe
+    columns:
+      - name: account_id
+        description: Unique account identifier
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: Customer ID foreign key
+        tests:
+          - not_null
+      - name: account_status
+        description: Current status of the account
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Active', 'Closed', 'Suspended', 'Delinquent']
+      - name: card_network
+        description: Card network
+        tests:
+          - accepted_values:
+              values: ['Visa', 'Mastercard', 'Discover', 'Amex']
+
+  - name: stg_merchants
+    description: Cleaned merchant reference data from mainframe MID registry
+    columns:
+      - name: merchant_id
+        description: Unique merchant identifier
+        tests:
+          - not_null
+          - unique
+      - name: merchant_name
+        description: Merchant business name
+        tests:
+          - not_null
+      - name: merchant_category_code
+        description: MCC code for merchant classification
+        tests:
+          - not_null

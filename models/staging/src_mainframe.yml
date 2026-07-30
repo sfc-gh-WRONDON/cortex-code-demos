@@ -1,0 +1,16 @@
+version: 2
+
+sources:
+  - name: raw_mainframe
+    database: CARDWORKS_DEMO
+    schema: RAW_MAINFRAME
+    description: Core transaction and account data landed by Snowpark from mainframe batch files
+    tables:
+      - name: credit_card_transactions
+        description: Raw credit card transaction records from mainframe daily batch
+      - name: accounts
+        description: Cardholder account master records from mainframe
+      - name: merchants
+        description: Merchant reference data from mainframe MID registry
+      - name: cardholders
+        description: Cardholder personal and demographic data

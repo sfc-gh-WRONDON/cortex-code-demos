@@ -1,0 +1,73 @@
+version: 2
+
+models:
+  - name: fct_transactions
+    description: >
+      Enriched credit card transactions with merchant details, account context,
+      and risk indicators. Grain is one row per transaction.
+    columns:
+      - name: transaction_id
+        description: Unique transaction identifier
+        tests:
+          - not_null
+          - unique
+      - name: account_id
+        description: Account number foreign key
+        tests:
+          - not_null
+      - name: merchant_id
+        description: Merchant ID foreign key
+        tests:
+          - not_null
+      - name: transaction_type
+        description: Type of card transaction
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Purchase', 'Refund', 'Cash Advance', 'Balance Transfer', 'Fee', 'Payment']
+      - name: card_network
+        description: Card network brand
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Visa', 'Mastercard', 'Discover', 'Amex']
+      - name: risk_level
+        description: Computed risk level for the transaction
+        tests:
+          - accepted_values:
+              values: ['LOW', 'MODERATE', 'HIGH']
+      - name: transaction_month
+        tests:
+          - not_null
+      - name: transaction_quarter
+        tests:
+          - not_null
+
+  - name: fct_monthly_txn_summary
+    description: >
+      Monthly transaction summary by account and merchant category.
+      Replaces legacy SAS MONTHLY_TXN_SUMMARY mart.
+      Grain is one row per account + month + merchant category.
+    columns:
+      - name: account_id
+        tests:
+          - not_null
+      - name: transaction_month
+        tests:
+          - not_null
+
+  - name: dim_accounts
+    description: >
+      Account dimension with balance snapshots, aging buckets, and utilization metrics.
+    columns:
+      - name: account_id
+        description: Unique account identifier
+        tests:
+          - not_null
+          - unique
+      - name: account_status
+        description: Current account status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Active', 'Closed', 'Suspended', 'Delinquent']
