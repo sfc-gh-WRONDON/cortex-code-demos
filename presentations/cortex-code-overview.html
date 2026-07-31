@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="snowflake-source" content="cortex-agent-authored">
+  <title>Cortex Code Overview</title>
+  <script type="application/json" id="snowflake-report-metadata">
+  {
+    "generated": "2026-07-28",
+    "intent": "Cortex Code overview and hands-on session presentation",
+    "sections": [
+      {"id":"hero","title":"Title"},
+      {"id":"agenda","title":"Agenda"},
+      {"id":"context-problem","title":"The Context Problem"},
+      {"id":"three-pillars","title":"Three Pillars"},
+      {"id":"control-plane","title":"Agentic Control Plane"},
+      {"id":"cortex-code","title":"Cortex Code"},
+      {"id":"agent-harness","title":"Agent Harness"},
+      {"id":"benchmarks","title":"Benchmarks"},
+      {"id":"customers","title":"Customer Proof"},
+      {"id":"workflows","title":"Data & AI Workflows"},
+      {"id":"skills-tools","title":"Skills & Tools"},
+      {"id":"platforms","title":"Where to Use CoCo"},
+      {"id":"lab","title":"Questions & Lab"}
+    ]
+  }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+      --bg: #0F1B2D;
+      --sidebar-bg: #1B2A4A;
+      --primary: #29B5E8;
+      --accent: #7C3AED;
+      --text: #E2E8F0;
+      --text-muted: #94A3B8;
+      --card-bg: #162236;
+      --border: #2D4A6F;
+      --green: #10B981;
+      --orange: #F59E0B;
+      --red: #EF4444;
+      --pink: #EC4899;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .progress-bar {
+      position: fixed; top: 0; left: 0; height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      z-index: 1000; transition: width 0.1s;
+    }
+
+    .sidebar {
+      position: fixed; left: 0; top: 0; width: 260px; height: 100vh;
+      background: var(--sidebar-bg); padding: 2rem 1.5rem;
+      overflow-y: auto; border-right: 1px solid var(--border); z-index: 100;
+    }
+    .sidebar h2 { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .sidebar-subtitle { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+    .sidebar a { display: block; color: var(--text-muted); text-decoration: none; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.85rem; margin-bottom: 0.25rem; transition: all 0.2s; }
+    .sidebar a:hover, .sidebar a.active { color: var(--text); background: rgba(41,181,232,0.1); }
+    .sidebar a.active { border-left: 3px solid var(--primary); padding-left: calc(0.75rem - 3px); }
+
+    .main { margin-left: 260px; }
+
+    .slide {
+      min-height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 4rem 3rem; max-width: 1100px; margin: 0 auto;
+    }
+    .slide h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-align: center; }
+    .slide h2 { font-size: 1.75rem; font-weight: 600; color: var(--text); margin-bottom: 1rem; text-align: center; }
+    .slide h3 { font-size: 1.05rem; font-weight: 400; color: var(--text-muted); margin-bottom: 1.5rem; text-align: center; max-width: 720px; }
+    .slide p { font-size: 1.05rem; color: var(--text-muted); max-width: 700px; text-align: center; }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; width: 100%; margin: 2rem 0; }
+    .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; }
+    .stat-card .value { font-size: 2rem; font-weight: 700; color: var(--primary); line-height: 1; }
+    .stat-card .label { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.6rem; line-height: 1.4; }
+
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; width: 100%; margin: 2rem 0; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .card h4 { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 0.6rem; }
+    .card p { font-size: 0.88rem; color: var(--text-muted); text-align: left; line-height: 1.6; }
+
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; width: 100%; margin: 1.5rem 0; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; width: 100%; margin: 1.5rem 0; }
+
+    .highlight-box { background: rgba(41,181,232,0.08); border: 1px solid var(--primary); border-radius: 12px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; width: 100%; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+    .context-box { background: rgba(124,58,237,0.08); border: 1px solid var(--accent); border-radius: 12px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; width: 100%; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+    .warning-box { background: rgba(245,158,11,0.08); border: 1px solid var(--orange); border-radius: 12px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; width: 100%; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+
+    .badge-green  { background: rgba(16,185,129,0.15); color: var(--green);   padding: 0.2rem 0.65rem; border-radius: 99px; font-size: 0.78rem; font-weight: 500; display: inline-block; margin: 0.15rem; }
+    .badge-blue   { background: rgba(41,181,232,0.15); color: var(--primary); padding: 0.2rem 0.65rem; border-radius: 99px; font-size: 0.78rem; font-weight: 500; display: inline-block; margin: 0.15rem; }
+    .badge-purple { background: rgba(124,58,237,0.15); color: var(--accent);  padding: 0.2rem 0.65rem; border-radius: 99px; font-size: 0.78rem; font-weight: 500; display: inline-block; margin: 0.15rem; }
+    .badge-orange { background: rgba(245,158,11,0.15); color: var(--orange);  padding: 0.2rem 0.65rem; border-radius: 99px; font-size: 0.78rem; font-weight: 500; display: inline-block; margin: 0.15rem; }
+
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.88rem; }
+    th { background: var(--card-bg); color: var(--primary); font-weight: 600; padding: 0.75rem 1rem; text-align: left; border-bottom: 2px solid var(--border); }
+    td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+    tr:hover td { background: rgba(41,181,232,0.04); }
+
+    .arch-diagram { width: 100%; max-width: 850px; margin: 1.5rem auto; display: flex; flex-direction: column; align-items: center; gap: 0.1rem; }
+    .arch-diagram .level { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+    .arch-diagram .node { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.25rem; text-align: center; color: var(--text); font-size: 0.88rem; }
+    .arch-diagram .node-primary { border-color: var(--primary); box-shadow: 0 0 14px rgba(41,181,232,0.2); }
+    .arch-diagram .node-accent { border-color: var(--accent); box-shadow: 0 0 10px rgba(124,58,237,0.15); }
+    .arch-diagram .node-green { border-color: var(--green); }
+    .arch-diagram .arrow { color: var(--text-muted); font-size: 1.2rem; margin: 0.35rem 0; }
+    .arch-diagram .layer-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin: 0.75rem 0 0.4rem; }
+
+    .bullet-list { list-style: none; margin: 0.5rem 0; }
+    .bullet-list li { font-size: 0.88rem; color: var(--text-muted); padding: 0.35rem 0 0.35rem 1.25rem; position: relative; line-height: 1.5; }
+    .bullet-list li::before { content: ''; position: absolute; left: 0; top: 0.65rem; width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
+    .bullet-list.green li::before { background: var(--green); }
+    .bullet-list.accent li::before { background: var(--accent); }
+
+    .quote-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; border-left: 3px solid var(--primary); }
+    .quote-card blockquote { font-size: 0.9rem; color: var(--text); font-style: italic; line-height: 1.6; margin-bottom: 0.75rem; }
+    .quote-card .attribution { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+    .quote-card .attribution span { color: var(--primary); }
+
+    .anim-fade { opacity: 0; transform: translateY(18px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    .anim-fade.visible { opacity: 1; transform: translateY(0); }
+
+    code { background: var(--card-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.45rem; font-size: 0.82rem; font-family: 'SF Mono', 'Fira Code', monospace; color: var(--primary); }
+
+    .agenda-item { display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.25rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 0.75rem; }
+    .agenda-item .num { font-size: 1.5rem; font-weight: 700; color: var(--primary); min-width: 2rem; }
+    .agenda-item .title { font-size: 1rem; color: var(--text); font-weight: 500; }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      .three-col, .two-col { grid-template-columns: 1fr; }
+      .slide { padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar" id="progress"></div>
+
+  <nav class="sidebar">
+    <h2>Cortex Code</h2>
+    <div class="sidebar-subtitle">Cortex Code Overview</div>
+    <a href="#hero">Title</a>
+    <a href="#agenda">Agenda</a>
+    <a href="#the-climb">The Climb</a>
+    <a href="#context-problem">The Context Problem</a>
+    <a href="#three-pillars">Three Pillars</a>
+    <a href="#control-plane">Agentic Control Plane</a>
+    <a href="#cortex-code">Cortex Code</a>
+    <a href="#moving-parts">The Moving Parts</a>
+    <a href="#agent-harness">Agent Harness</a>
+    <a href="#workflows">Data & AI Workflows</a>
+    <a href="#skills-tools">Skills & Tools</a>
+    <a href="#benchmarks">Benchmarks</a>
+    <a href="#customers">Customer Proof</a>
+    <a href="#platforms">Where to Use CoCo</a>
+    <a href="#lab">Questions & Lab</a>
+  </nav>
+
+  <main class="main">
+
+    <!-- ─── Slide 1: Hero ─── -->
+    <section class="slide" id="hero">
+      <h1>Cortex Code Overview &amp; Hands-On Session</h1>
+      <p style="font-size: 1.2rem; color: var(--text); font-weight: 500; margin-bottom: 0.5rem;">Cortex Code Overview &amp; Hands-On Session</p>
+      <p style="margin-top: 1rem;">[SE Name] — Enterprise AI Specialist</p>
+      <p>[Customer Name]</p>
+    </section>
+
+    <!-- ─── Slide 2: Agenda ─── -->
+    <section class="slide" id="agenda">
+      <h2>Agenda</h2>
+      <div class="anim-fade" style="width: 100%; max-width: 600px;">
+        <div class="agenda-item"><div class="num">1</div><div class="title">Snowflake AI Platform Overview</div></div>
+        <div class="agenda-item"><div class="num">2</div><div class="title">Cortex Code Deep Dive</div></div>
+        <div class="agenda-item"><div class="num">3</div><div class="title">Demo 1: Agentic dbt Pipeline</div></div>
+        <div class="agenda-item"><div class="num">4</div><div class="title">Demo 2: (Hands-On) Vendor Data Pipeline Creator</div></div>
+        <div class="agenda-item"><div class="num">5</div><div class="title">Open Q&amp;A — Use Case Discussion</div></div>
+      </div>
+    </section>
+
+    <!-- ─── Slide: The Climb ─── -->
+    <section class="slide" id="the-climb">
+      <div class="anim-fade" style="width: 100%; max-width: 750px;">
+
+        <h2 style="text-align: left; font-size: 2.2rem; margin-bottom: 2rem;">Where you are on the <span style="color: var(--primary);">ladder</span></h2>
+
+        <div style="margin-bottom: 2.5rem;">
+          <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <span style="color: var(--primary); font-size: 1.5rem; line-height: 1;">•</span>
+            <p style="text-align: left; font-size: 1.05rem; color: var(--text);"><strong style="color: var(--primary);">A organised, B repeatable:</strong> adopt a harness and let it carry your work.</p>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <span style="color: var(--primary); font-size: 1.5rem; line-height: 1;">•</span>
+            <p style="text-align: left; font-size: 1.05rem; color: var(--text);"><strong style="color: var(--primary);">C self-improving:</strong> it adapts to you, and you author the how.</p>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <span style="color: var(--primary); font-size: 1.5rem; line-height: 1;">•</span>
+            <p style="text-align: left; font-size: 1.05rem; color: var(--text);"><strong style="color: var(--primary);">D autonomous:</strong> let it run, keep the gate, promote on earned trust.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─── Slide 3: The Context Problem ─── -->
+    <section class="slide" id="context-problem">
+      <h2>The Hardest Problem in Agentic Systems is Not Intelligence — It's Context</h2>
+
+      <div class="two-col anim-fade">
+        <div>
+          <div class="warning-box" style="margin: 0;">
+            <strong>WHY AGENTIC SYSTEMS FAIL</strong>
+            <p style="margin-top: 0.75rem;">Agents won't fail because models are weak. They will fail because agents don't share the same truth and therefore <strong style="color: var(--text);">disagree</strong> or have <strong style="color: var(--text);">partial context</strong>.</p>
+            <p style="margin-top: 0.75rem;">Lack of shared governance leads to incoherent actions.</p>
+          </div>
+        </div>
+        <div>
+          <div class="highlight-box" style="margin: 0;">
+            <strong>THE ADVANTAGE</strong>
+            <p style="margin-top: 0.75rem;">Snowflake uniquely solves the multi-agent truth problem: a governed, explainable, cross-domain foundation.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="three-col anim-fade" style="margin-top: 1.5rem;">
+        <div class="card" style="border-top: 3px solid var(--primary); text-align: center;">
+          <h4>AGREE ON REALITY</h4>
+          <p style="text-align: center;">Shared semantic models across all agents</p>
+          <p style="margin-top: 0.75rem;"><span class="badge-blue">Sales Data</span> <span class="badge-blue">Customer Context</span></p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent); text-align: center;">
+          <h4>REASON OVER IT</h4>
+          <p style="text-align: center;">Intelligent orchestration with full context</p>
+          <p style="margin-top: 0.75rem;"><span class="badge-purple">Product Specs</span> <span class="badge-purple">Inventory</span></p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--green); text-align: center;">
+          <h4>ACT COHERENTLY</h4>
+          <p style="text-align: center;">Safe execution within enterprise guardrails</p>
+          <p style="margin-top: 0.75rem;"><span class="badge-green">Governance</span> <span class="badge-green">Audit</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Slide 4: Three Pillars ─── -->
+    <section class="slide" id="three-pillars">
+      <h2>Three Critical Pillars Separate AI Projects From AI Transformation</h2>
+      <h3>Snowflake addresses all three in one platform, reducing Time to Value</h3>
+
+      <div class="three-col anim-fade">
+        <div class="card" style="border-top: 3px solid var(--primary);">
+          <h4>Data &amp; Context</h4>
+          <p><strong style="color: var(--text);">Models don't know your business.</strong></p>
+          <p style="margin-top: 0.5rem;">Without governed, structured + unstructured context, agents <em>hallucinate</em> or <em>miss the metric definition entirely</em>.</p>
+          <p style="margin-top: 0.75rem;"><span class="badge-blue">Control Plane</span></p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent);">
+          <h4>Security &amp; Governance</h4>
+          <p><strong style="color: var(--text);">Trust is not optional.</strong></p>
+          <p style="margin-top: 0.5rem;">Every agent needs the consistent <em>access controls</em> as your users along with policies — not a parallel governance stack.</p>
+          <p style="margin-top: 0.75rem;"><span class="badge-purple">Execution Plane</span></p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--orange);">
+          <h4>Cost / Performance</h4>
+          <p><strong style="color: var(--text);">Scale without bankrupting.</strong></p>
+          <p style="margin-top: 0.5rem;">Runaway tokens and per-person costs balloon when every turn re-discovers your context. Model <em>optionality</em> avoids lock-ins.</p>
+          <p style="margin-top: 0.75rem;"><span class="badge-orange">Operations Plane</span></p>
+        </div>
+      </div>
+
+      <div class="context-box anim-fade">
+        <strong>WHY EFFORTS STALL:</strong> Most organizations address one pillar while ignoring the other two. Snowflake provides a single platform that delivers governed context, enterprise security, and cost control together — so AI projects become AI transformation.
+      </div>
+    </section>
+
+    <!-- ─── Slide 5: Agentic Control Plane ─── -->
+    <section class="slide" id="control-plane">
+      <h2>Snowflake Cortex — The Agentic Control Plane</h2>
+
+      <div class="arch-diagram anim-fade">
+        <div class="layer-label">UX Layer</div>
+        <div class="level">
+          <div class="node node-primary">CoWork<br><small style="color:var(--text-muted);">Business User UX</small></div>
+          <div class="node node-primary">CoCo<br><small style="color:var(--text-muted);">Developer UX</small></div>
+          <div class="node node-primary">Agent Studio<br><small style="color:var(--text-muted);">Build &amp; Deploy</small></div>
+          <div class="node node-primary">Streamlit<br><small style="color:var(--text-muted);">Custom Apps</small></div>
+        </div>
+
+        <div class="arrow">↓</div>
+        <div class="layer-label">Intelligence Layer</div>
+        <div class="level">
+          <div class="node node-accent">AI Functions<br><small style="color:var(--text-muted);">AI_COMPLETE, AI_EXTRACT, etc.</small></div>
+          <div class="node node-accent">Cortex Search + Analyst<br><small style="color:var(--text-muted);">Retrieval &amp; NL-to-SQL</small></div>
+          <div class="node node-accent">ML Models<br><small style="color:var(--text-muted);">Train, Deploy, Predict</small></div>
+        </div>
+
+        <div class="arrow">↓</div>
+        <div class="layer-label">Domain Knowledge Layer</div>
+        <div class="level">
+          <div class="node node-green">Semantic View<br><small style="color:var(--text-muted);">Business definitions</small></div>
+          <div class="node node-green">MCP &amp; Connectors<br><small style="color:var(--text-muted);">External tools</small></div>
+          <div class="node node-green">All Data<br><small style="color:var(--text-muted);">Structured + Unstructured</small></div>
+          <div class="node node-green">Automated Context Runtime<br><small style="color:var(--text-muted);">Schema injection</small></div>
+        </div>
+
+        <div class="arrow">↓</div>
+        <div class="level">
+          <div class="node" style="border-color: var(--border); padding: 0.6rem 3rem; font-size: 0.8rem; width: 100%; text-align: center;">
+            <strong style="color: var(--text-muted);">GOVERNANCE | POLICY CONTROL | AUDIT &amp; LINEAGE</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="highlight-box anim-fade">
+        <strong>Example query:</strong> <em>"How many calls are driven by payment friction, and what's the escalation rate?"</em> — The UX layer routes to Cortex Analyst, which queries governed tables using the semantic view's business definitions. The response respects RBAC, is audited, and costs are attributed to the calling team.
+      </div>
+    </section>
+
+    <!-- ─── Slide 6: Cortex Code ─── -->
+    <section class="slide" id="cortex-code">
+      <h2>Cortex Code: AI Coding Agent for Data Teams</h2>
+      <h3>From natural language to production-ready code across your entire data stack</h3>
+
+      <div class="two-col anim-fade">
+        <div>
+          <div class="warning-box" style="margin: 0;">
+            <strong>THE CURRENT STATE — Traditional Dev Friction</strong>
+            <ul class="bullet-list" style="margin-top: 0.75rem;">
+              <li><strong style="color:var(--text);">Fragmented Toolchain</strong> — Workflows spanning dbt, Airflow, SQL, and Notebooks → constant context switching.</li>
+              <li><strong style="color:var(--text);">Slow Iteration</strong> — Manual refactoring and tribal knowledge slow debugging and deployments.</li>
+              <li><strong style="color:var(--text);">Governance Friction</strong> — Access controls and policies bottleneck rapid prototyping.</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="highlight-box" style="margin: 0;">
+            <strong>THE SOLUTION — Context-Aware AI Development</strong>
+            <p style="margin-top: 0.75rem;">From natural language to production-ready code across your entire data stack.</p>
+            <p style="margin-top: 0.75rem;"><span class="badge-blue">CLI</span> <span class="badge-blue">Snowsight</span> <span class="badge-blue">Desktop App</span> <span class="badge-blue">SDK</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Slide: The Moving Parts ─── -->
+    <section class="slide" id="moving-parts">
+      <div class="anim-fade" style="width: 100%; max-width: 780px;">
+        <h2 style="text-align: left; font-size: 2.2rem; margin-bottom: 2rem;">The pieces, and <span style="color: var(--primary);">where they sit</span></h2>
+
+        <div style="margin-bottom: 2.5rem;">
+          <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <span style="color: var(--primary); font-size: 1.5rem; line-height: 1;">•</span>
+            <p style="text-align: left; font-size: 1.05rem; color: var(--text);"><strong style="color: var(--primary);">Your prompt:</strong> in the moment, right at the Turn. Says what you want now.</p>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <span style="color: var(--primary); font-size: 1.5rem; line-height: 1;">•</span>
+            <p style="text-align: left; font-size: 1.05rem; color: var(--text);"><strong style="color: var(--primary);">Skill:</strong> loaded ahead of the Turn. Durable knowledge and procedure, but easily buried under intervening work.</p>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <span style="color: var(--primary); font-size: 1.5rem; line-height: 1;">•</span>
+            <p style="text-align: left; font-size: 1.05rem; color: var(--text);"><strong style="color: var(--primary);">Hook:</strong> fires on an event around the Turn. Injects a nudge, or gates an action.</p>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <span style="color: var(--primary); font-size: 1.5rem; line-height: 1;">•</span>
+            <p style="text-align: left; font-size: 1.05rem; color: var(--text);"><strong style="color: var(--primary);">MCP:</strong> wraps a tool's request and its response. Reshapes what the agent sends, and what it gets back.</p>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <span style="color: var(--primary); font-size: 1.5rem; line-height: 1;">•</span>
+            <p style="text-align: left; font-size: 1.05rem; color: var(--text);"><strong style="color: var(--primary);">Plugin:</strong> packages the above so other people can adopt it.</p>
+          </div>
+        </div>
+
+        <p style="text-align: left; font-size: 0.95rem; color: var(--text-muted); line-height: 1.7;">Two of these sit right on the Turn: <strong style="color: var(--text);">hooks and MCP</strong>.<br>That is where the leverage lives.</p>
+      </div>
+    </section>
+
+    <!-- ─── Slide 6b: Agent Harness ─── -->
+    <section class="slide" id="agent-harness">
+      <h2>The Data-Native Agent Harness</h2>
+
+      <div class="anim-fade" style="width: 100%; max-width: 820px; margin: 0 auto;">
+
+        <!-- User Query -->
+        <div style="display: flex; justify-content: center; margin-bottom: 0.75rem;">
+          <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem 2.5rem; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.88rem; color: var(--text);">
+            &gt; User query in Natural Language
+          </div>
+        </div>
+
+        <!-- Arrows -->
+        <div style="text-align: center; color: var(--primary); font-size: 1.2rem; margin: 0.3rem 0;">↕</div>
+
+        <!-- Agent Harness Container -->
+        <div style="border: 2px solid var(--primary); border-radius: 12px; padding: 1.5rem; background: rgba(41,181,232,0.03);">
+
+          <!-- Harness Header -->
+          <div style="text-align: center; font-size: 0.85rem; font-weight: 700; color: var(--text); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.25rem;">AGENT HARNESS</div>
+
+          <!-- Three Context Boxes -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div style="background: var(--primary); border-radius: 8px; padding: 1rem; text-align: center;">
+              <div style="font-weight: 600; color: white; font-size: 0.88rem;">Live Schema Injection</div>
+              <div style="font-size: 0.78rem; color: rgba(255,255,255,0.8); margin-top: 0.3rem;">fetches schema + sample data</div>
+            </div>
+            <div style="background: var(--primary); border-radius: 8px; padding: 1rem; text-align: center;">
+              <div style="font-weight: 600; color: white; font-size: 0.88rem;">Agent Context Layer</div>
+              <div style="font-size: 0.78rem; color: rgba(255,255,255,0.8); margin-top: 0.3rem;">Custom System Prompt with product knowledge</div>
+            </div>
+            <div style="background: var(--primary); border-radius: 8px; padding: 1rem; text-align: center;">
+              <div style="font-weight: 600; color: white; font-size: 0.88rem;">Environment State</div>
+              <div style="font-size: 0.78rem; color: rgba(255,255,255,0.8); margin-top: 0.3rem;">RBAC, computes, warehouses, runtime</div>
+            </div>
+          </div>
+
+          <!-- Agent Skills Bar -->
+          <div style="background: #1B4A6A; border-radius: 8px; padding: 0.85rem 1.5rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 1.5rem;">
+            <span style="font-weight: 600; color: white; font-size: 0.88rem;">Agent Skills</span>
+            <span style="font-size: 0.82rem; color: rgba(255,255,255,0.75);">100+ domain skills &nbsp;|&nbsp; Pass@k eval gating &nbsp;|&nbsp; Routing</span>
+          </div>
+
+          <!-- Agent Runtime Bar -->
+          <div style="background: #1B4A6A; border-radius: 8px; padding: 0.85rem 1.5rem; display: flex; align-items: center; gap: 1.5rem;">
+            <span style="font-weight: 600; color: white; font-size: 0.88rem;">Agent Runtime</span>
+            <span style="font-size: 0.82rem; color: rgba(255,255,255,0.75);">sql_execute &nbsp;|&nbsp; subagents &nbsp;|&nbsp; MCP servers &nbsp;|&nbsp; 100+ tools</span>
+          </div>
+
+        </div>
+
+        <!-- Arrows -->
+        <div style="text-align: center; color: var(--primary); font-size: 1.2rem; margin: 0.5rem 0;">↕</div>
+
+        <!-- Platform + Models -->
+        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 1rem;">
+          <div style="background: #0C2D48; border: 2px solid var(--primary); border-radius: 10px; padding: 1rem 1.5rem; text-align: center;">
+            <div style="font-weight: 700; color: white; font-size: 0.9rem; margin-bottom: 0.4rem;">SNOWFLAKE PLATFORM</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Metadata &nbsp;|&nbsp; Compute &nbsp;|&nbsp; Storage &nbsp;|&nbsp; Governance &nbsp;|&nbsp; RBAC</div>
+          </div>
+          <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.5rem; text-align: center;">
+            <div style="font-weight: 700; color: white; font-size: 0.9rem; margin-bottom: 0.4rem;">SNOWFLAKE HOSTED MODELS</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">OpenAI &nbsp;&bull;&nbsp; Anthropic &nbsp;&bull;&nbsp; Gemini &nbsp;&bull;&nbsp; Grok</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─── Slide 9: Data & AI Workflows ─── -->
+    <section class="slide" id="workflows">
+      <h2>Accelerate Your Data and AI Workflows</h2>
+
+      <div class="card-grid anim-fade" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="card" style="border-top: 3px solid var(--primary); text-align: center;">
+          <h4>Data Discovery</h4>
+          <p style="text-align: center;">Search the catalog for data with semantic understanding</p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--primary); text-align: center;">
+          <h4>Admin Task</h4>
+          <p style="text-align: center;">Manage users, permissions, costs and governance</p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--primary); text-align: center;">
+          <h4>Data Engineering</h4>
+          <p style="text-align: center;">Build &amp; optimize pipelines with dbt and AirFlow</p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--primary); text-align: center;">
+          <h4>AI &amp; Agents</h4>
+          <p style="text-align: center;">Build, evaluate, optimize, debug agents and semantic views</p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent); text-align: center;">
+          <h4>ML &amp; Data Science</h4>
+          <p style="text-align: center;">Auto-generate ML pipelines and feature engineering</p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent); text-align: center;">
+          <h4>Advanced Analytics</h4>
+          <p style="text-align: center;">Complex analysis with Python and SQL generation</p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent); text-align: center;">
+          <h4>BI &amp; Apps</h4>
+          <p style="text-align: center;">Streamlit apps, dashboards &amp; data applications</p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent); text-align: center;">
+          <h4>Code Migration &amp; Refactoring</h4>
+          <p style="text-align: center;">Refactor and convert code from other platforms</p>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ─── Slide 10: Skills & Tools ─── -->
+    <section class="slide" id="skills-tools">
+      <h2>Cortex Code: Bundled Skills &amp; Tools</h2>
+      <h3>CoCo CLI contains tools and bundled skills specific to Snowflake capabilities — extendable via custom skills and MCP servers</h3>
+
+      <div class="two-col anim-fade">
+        <div>
+          <div class="card" style="border-top: 3px solid var(--primary);">
+            <h4>Tools</h4>
+            <ul class="bullet-list">
+              <li>Plan Mode</li>
+              <li>SQL Execution</li>
+              <li>Snowflake Documentation Access</li>
+              <li>Local files access</li>
+              <li>Terminal / Shell commands</li>
+              <li>Web Search</li>
+              <li>Browser</li>
+              <li>Model Context Protocol (MCP)</li>
+              <li>git Support</li>
+              <li>dbt Support</li>
+            </ul>
+          </div>
+          <div class="context-box" style="margin-top: 1rem;">
+            <strong>Extensibility:</strong> Skills (bundled and custom), Agents.md, Plugins, Hooks
+          </div>
+        </div>
+        <div>
+          <div class="card" style="border-top: 3px solid var(--accent);">
+            <h4>Bundled Skill Categories</h4>
+            <ul class="bullet-list accent">
+              <li>Getting Started with Cortex Code</li>
+              <li>Warehouse &amp; Compute</li>
+              <li>Data Engineering &amp; Pipelines</li>
+              <li>Analytics and Dashboards</li>
+              <li>Snowpark Development</li>
+              <li>AI &amp; Machine Learning</li>
+              <li>Data Quality &amp; Observability</li>
+              <li>Data Governance &amp; Security</li>
+              <li>Data Sharing &amp; Marketplace</li>
+              <li>Platform &amp; Cost Management</li>
+              <li>Migrations &amp; Assessments</li>
+              <li>Skill Development</li>
+            </ul>
+          </div>
+          <div class="card" style="margin-top: 1rem; border-top: 3px solid var(--green);">
+            <h4>dbt-Specific Skills</h4>
+            <ul class="bullet-list green">
+              <li><strong style="color:var(--text);">dbt on Snowflake</strong> — Deploy, execute, schedule, manage dbt as a Snowflake native object</li>
+              <li><strong style="color:var(--text);">dbt Verification Agent</strong> — Validates builds, JOINs, and downstream dependencies post-change</li>
+              <li><strong style="color:var(--text);">General dbt</strong> — Model authoring, refactoring, Jinja templating, tests, Snowflake-specific optimizations</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Benchmarks ─── -->
+    <section class="slide" id="benchmarks">
+      <h2>Cortex Code: Built to Accelerate Data Engineering</h2>
+      <h3>Analytics and Data Engineering Benchmark (ADE-Bench*) — Pass rates on 43 total tasks</h3>
+
+      <div class="stat-grid anim-fade">
+        <div class="stat-card" style="border-top: 3px solid var(--primary);">
+          <div class="value">854</div>
+          <div class="label">Tool Calls — 48% fewer vs. Claude Code (1,657)</div>
+        </div>
+        <div class="stat-card" style="border-top: 3px solid var(--primary);">
+          <div class="value">19.9</div>
+          <div class="label">Avg Steps — ~50% fewer vs. Claude Code (38.5)</div>
+        </div>
+        <div class="stat-card" style="border-top: 3px solid var(--green);">
+          <div class="value">2×</div>
+          <div class="label">Fewer File Reads — targeted exploration vs. exhaustive scanning</div>
+        </div>
+        <div class="stat-card" style="border-top: 3px solid var(--green);">
+          <div class="value">4×</div>
+          <div class="label">Fewer Bash Commands — SQL-native execution via snowflake_sql_execute</div>
+        </div>
+      </div>
+
+      <div class="highlight-box anim-fade">
+        <strong>15.7% higher efficiency score</strong> — Cortex Code achieves comparable pass rates but demonstrates superior execution efficiency. It performs targeted exploration rather than exhaustive scanning, significantly reducing IO operations. It utilizes <code>snowflake_sql_execute</code> for native execution, avoiding heavy reliance on bash tools common in Claude’s workflow.
+      </div>
+
+      <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem;">*ADE-Bench by dbt · Model Version: Opus 4.6</p>
+    </section>
+
+    <!-- ─── Customer Proof ─── -->
+    <section class="slide" id="customers">
+      <h2>Trusted By 7,100+ Customers</h2>
+      <h3>Customers across industries significantly reduced time to build on data</h3>
+
+      <div class="three-col anim-fade">
+        <div class="quote-card">
+          <blockquote>“Using CoCo, our data engineers are submitting 5x more pull requests, and work that used to take three to four days is now done in two to three hours.”</blockquote>
+          <div class="attribution"><span>Thomas Podenski</span><br>Chief Operating Officer, TS Imagine</div>
+        </div>
+        <div class="quote-card">
+          <blockquote>“Engineers who used to spend days untangling pipeline issues and modeling data can now resolve those problems in hours.”</blockquote>
+          <div class="attribution"><span>Maddy Want</span><br>VP of Data, Fanatics</div>
+        </div>
+        <div class="quote-card">
+          <blockquote>“We saw the ROI almost immediately. CoCo delivered over 500 hours of time savings — roughly $100,000 in value — within the first 20 days of adoption.”</blockquote>
+          <div class="attribution"><span>Trent Foley</span><br>Chief Technology Officer, evolv Consulting</div>
+        </div>
+      </div>
+
+      <div class="stat-grid anim-fade" style="grid-template-columns: repeat(3, 1fr); margin-top: 1rem;">
+        <div class="stat-card">
+          <div class="value">5×</div>
+          <div class="label">More PRs submitted by data engineers (TS Imagine)</div>
+        </div>
+        <div class="stat-card">
+          <div class="value">500+</div>
+          <div class="label">Hours saved in 20 days of adoption (evolv Consulting)</div>
+        </div>
+        <div class="stat-card">
+          <div class="value">3–4 days → 2–3 hrs</div>
+          <div class="label" style="font-size: 0.78rem;">Pipeline work compression (TS Imagine)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Slide 11: Where to Use CoCo ─── -->
+    <section class="slide" id="platforms">
+      <h2>Where You Can Use CoCo Today</h2>
+
+      <div class="card-grid anim-fade" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="card" style="border-top: 3px solid var(--primary); text-align: center; padding: 2rem 1.5rem;">
+          <h4 style="font-size: 1.1rem;">CoCo CLI &amp; SDK</h4>
+          <p style="text-align: center; margin-top: 0.5rem;">Terminal-native, full-featured agent in your local workflow</p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent); text-align: center; padding: 2rem 1.5rem;">
+          <h4 style="font-size: 1.1rem;">CoCo in Snowsight</h4>
+          <p style="text-align: center; margin-top: 0.5rem;">Embedded directly in the Snowflake web UI — no install</p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--green); text-align: center; padding: 2rem 1.5rem;">
+          <h4 style="font-size: 1.1rem;">CoCo Plugin for Claude Code</h4>
+          <p style="text-align: center; margin-top: 0.5rem;">Bring Snowflake context into your existing Claude Code workflow</p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--orange); text-align: center; padding: 2rem 1.5rem;">
+          <h4 style="font-size: 1.1rem;">CoCo Extension for VS Code</h4>
+          <p style="text-align: center; margin-top: 0.5rem;">IDE integration for Visual Studio Code users</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Slide 12: Questions & Lab ─── -->
+    <section class="slide" id="lab">
+      <h1>Questions &amp; Lab</h1>
+      <p style="margin-top: 1rem; font-size: 1.1rem; color: var(--text);">Let's build together.</p>
+      <div class="anim-fade" style="margin-top: 2rem; text-align: center; width: 100%; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Cortex Code Overview · Snowflake</p>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    window.addEventListener('scroll', function() {
+      var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      var scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      var progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+      document.getElementById('progress').style.width = progress + '%';
+    });
+
+    var sections = document.querySelectorAll('section[id]');
+    var navLinks = document.querySelectorAll('.sidebar a');
+    var spyObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          navLinks.forEach(function(link) {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + entry.target.id) { link.classList.add('active'); }
+          });
+        }
+      });
+    }, { threshold: 0.35 });
+    sections.forEach(function(s) { spyObserver.observe(s); });
+
+    var animElements = document.querySelectorAll('.anim-fade');
+    var animObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) { if (entry.isIntersecting) { entry.target.classList.add('visible'); } });
+    }, { threshold: 0.08 });
+    animElements.forEach(function(el) { animObserver.observe(el); });
+  </script>
+
+</body>
+</html>
