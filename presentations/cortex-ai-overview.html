@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="snowflake-source" content="cortex-agent-authored">
+  <title>Cortex AI Overview</title>
+  <script type="application/json" id="snowflake-report-metadata">
+  {
+    "generated": "2026-08-07",
+    "intent": "Cortex AI overview presentation",
+    "sections": [
+      {"id":"hero","title":"Title"},
+      {"id":"agenda","title":"Agenda"},
+      {"id":"the-climb","title":"The Climb"},
+      {"id":"context-problem","title":"The Context Problem"},
+      {"id":"three-pillars","title":"Three Pillars"},
+      {"id":"control-plane","title":"Agentic Control Plane"},
+      {"id":"cortex-code","title":"Cortex Code"},
+      {"id":"cowork","title":"Snowflake CoWork"},
+      {"id":"demos","title":"Live Demos"},
+      {"id":"arpu-demo","title":"ARPU Demo Deep Dive"}
+    ]
+  }
+  </script>
+  <style>
+    :root {
+      --bg: #0F1B2D;
+      --sidebar-bg: #1B2A4A;
+      --primary: #29B5E8;
+      --accent: #7C3AED;
+      --text: #E2E8F0;
+      --text-muted: #94A3B8;
+      --card-bg: #162236;
+      --border: #2D4A6F;
+      --green: #10B981;
+      --orange: #F59E0B;
+      --red: #EF4444;
+      --pink: #EC4899;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .progress-bar {
+      position: fixed; top: 0; left: 0; height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      z-index: 1000; transition: width 0.1s;
+    }
+
+    .sidebar {
+      position: fixed; left: 0; top: 0; width: 260px; height: 100vh;
+      background: var(--sidebar-bg); padding: 2rem 1.5rem;
+      overflow-y: auto; border-right: 1px solid var(--border); z-index: 100;
+    }
+    .sidebar h2 { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .sidebar-subtitle { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+    .sidebar a { display: block; color: var(--text-muted); text-decoration: none; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.85rem; margin-bottom: 0.25rem; transition: all 0.2s; }
+    .sidebar a:hover, .sidebar a.active { color: var(--text); background: rgba(41,181,232,0.1); }
+    .sidebar a.active { border-left: 3px solid var(--primary); padding-left: calc(0.75rem - 3px); }
+
+    .main { margin-left: 260px; }
+
+    .slide {
+      min-height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 4rem 3rem; max-width: 1100px; margin: 0 auto;
+    }
+    .slide h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-align: center; }
+    .slide h2 { font-size: 1.75rem; font-weight: 600; color: var(--text); margin-bottom: 1rem; text-align: center; }
+    .slide h3 { font-size: 1.05rem; font-weight: 400; color: var(--text-muted); margin-bottom: 1.5rem; text-align: center; max-width: 720px; }
+    .slide p { font-size: 1.05rem; color: var(--text-muted); max-width: 700px; text-align: center; }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; width: 100%; margin: 2rem 0; }
+    .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; }
+    .stat-card .value { font-size: 2rem; font-weight: 700; color: var(--primary); line-height: 1; }
+    .stat-card .label { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.6rem; line-height: 1.4; }
+
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; width: 100%; margin: 2rem 0; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .card h4 { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 0.6rem; }
+    .card p { font-size: 0.88rem; color: var(--text-muted); text-align: left; line-height: 1.6; }
+
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; width: 100%; margin: 1.5rem 0; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; width: 100%; margin: 1.5rem 0; }
+
+    .highlight-box { background: rgba(41,181,232,0.08); border: 1px solid var(--primary); border-radius: 12px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; width: 100%; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+    .context-box { background: rgba(124,58,237,0.08); border: 1px solid var(--accent); border-radius: 12px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; width: 100%; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+    .warning-box { background: rgba(245,158,11,0.08); border: 1px solid var(--orange); border-radius: 12px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; width: 100%; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+
+    .badge-green  { background: rgba(16,185,129,0.15); color: var(--green);   padding: 0.2rem 0.65rem; border-radius: 99px; font-size: 0.78rem; font-weight: 500; display: inline-block; margin: 0.15rem; }
+    .badge-blue   { background: rgba(41,181,232,0.15); color: var(--primary); padding: 0.2rem 0.65rem; border-radius: 99px; font-size: 0.78rem; font-weight: 500; display: inline-block; margin: 0.15rem; }
+    .badge-purple { background: rgba(124,58,237,0.15); color: var(--accent);  padding: 0.2rem 0.65rem; border-radius: 99px; font-size: 0.78rem; font-weight: 500; display: inline-block; margin: 0.15rem; }
+    .badge-orange { background: rgba(245,158,11,0.15); color: var(--orange);  padding: 0.2rem 0.65rem; border-radius: 99px; font-size: 0.78rem; font-weight: 500; display: inline-block; margin: 0.15rem; }
+
+    .arch-diagram { width: 100%; max-width: 850px; margin: 1.5rem auto; display: flex; flex-direction: column; align-items: center; gap: 0.1rem; }
+    .arch-diagram .level { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+    .arch-diagram .node { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.25rem; text-align: center; color: var(--text); font-size: 0.88rem; }
+    .arch-diagram .node-primary { border-color: var(--primary); box-shadow: 0 0 14px rgba(41,181,232,0.2); }
+    .arch-diagram .node-accent { border-color: var(--accent); box-shadow: 0 0 10px rgba(124,58,237,0.15); }
+    .arch-diagram .node-green { border-color: var(--green); }
+    .arch-diagram .arrow { color: var(--text-muted); font-size: 1.2rem; margin: 0.35rem 0; }
+    .arch-diagram .layer-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin: 0.75rem 0 0.4rem; }
+
+    .agenda-item { display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.25rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 0.75rem; }
+    .agenda-item .num { font-size: 1.5rem; font-weight: 700; color: var(--primary); min-width: 2rem; }
+    .agenda-item .title { font-size: 1rem; color: var(--text); font-weight: 500; }
+
+    .anim-fade { opacity: 0; transform: translateY(18px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    .anim-fade.visible { opacity: 1; transform: translateY(0); }
+
+    @media print {
+      .anim-fade { opacity: 1 !important; transform: none !important; }
+      .sidebar { display: none !important; }
+      .main { margin-left: 0 !important; }
+      .slide { min-height: auto; page-break-after: always; padding: 2rem; }
+      .progress-bar { display: none !important; }
+    }
+
+    code { background: var(--card-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.45rem; font-size: 0.82rem; font-family: 'SF Mono', 'Fira Code', monospace; color: var(--primary); }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      .three-col, .two-col { grid-template-columns: 1fr; }
+      .slide { padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar" id="progress"></div>
+
+  <nav class="sidebar">
+    <h2>Cortex AI</h2>
+    <div class="sidebar-subtitle">Cortex AI Overview</div>
+    <a href="#hero">Title</a>
+    <a href="#agenda">Agenda</a>
+    <a href="#the-climb">The Climb</a>
+    <a href="#context-problem">The Context Problem</a>
+    <a href="#three-pillars">Three Pillars</a>
+    <a href="#control-plane">Agentic Control Plane</a>
+    <a href="#cortex-code">Cortex Code</a>
+    <a href="#cowork">CoWork</a>
+    <a href="#demos">Demos</a>
+    <a href="#arpu-demo">ARPU Deep Dive</a>
+  </nav>
+
+  <main class="main">
+
+    <!-- Slide 1: Hero -->
+    <section class="slide" id="hero">
+      <h1>Cortex AI Overview</h1>
+      <p style="font-size: 1.2rem; color: var(--text); font-weight: 500; margin-bottom: 0.5rem;">Snowflake Cortex AI Platform</p>
+      <p style="margin-top: 1rem;">[SE Name] — Enterprise AI Specialist</p>
+      <p>[Account Engineer]</p>
+      <p>[Account Executive]</p>
+      <p style="margin-top: 0.75rem;">[Customer Name]</p>
+    </section>
+
+    <!-- Slide 2: Agenda -->
+    <section class="slide" id="agenda">
+      <h2>Agenda</h2>
+      <div class="anim-fade" style="width: 100%; max-width: 600px;">
+        <div class="agenda-item"><div class="num">1</div><div class="title">The AI Adoption Ladder</div></div>
+        <div class="agenda-item"><div class="num">2</div><div class="title">The Context Problem &amp; Three Pillars</div></div>
+        <div class="agenda-item"><div class="num">3</div><div class="title">Snowflake Cortex — The Agentic Control Plane</div></div>
+        <div class="agenda-item"><div class="num">4</div><div class="title">Cortex Code &amp; CoWork</div></div>
+        <div class="agenda-item"><div class="num">5</div><div class="title">Live Demos — Simplified Amplitude &amp; ARPU Intelligence</div></div>
+      </div>
+    </section>
+
+    <!-- Slide: The Climb -->
+    <section class="slide" id="the-climb">
+      <div class="anim-fade" style="width: 100%; max-width: 750px;">
+
+        <h2 style="text-align: left; font-size: 2.2rem; margin-bottom: 2rem;">The AI Adoption <span style="color: var(--primary);">Ladder</span></h2>
+
+        <div style="margin-bottom: 2.5rem;">
+          <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <span style="color: var(--primary); font-size: 1.5rem; line-height: 1;">&#8226;</span>
+            <p style="text-align: left; font-size: 1.05rem; color: var(--text);"><strong style="color: var(--primary);">A organised:</strong> consolidate your workflow and tools.</p>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <span style="color: var(--primary); font-size: 1.5rem; line-height: 1;">&#8226;</span>
+            <p style="text-align: left; font-size: 1.05rem; color: var(--text);"><strong style="color: var(--primary);">B repeatable:</strong> adopt an agent and let it carry your work.</p>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <span style="color: var(--primary); font-size: 1.5rem; line-height: 1;">&#8226;</span>
+            <p style="text-align: left; font-size: 1.05rem; color: var(--text);"><strong style="color: var(--primary);">C self-improving:</strong> it adapts to you, and you author the how.</p>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <span style="color: var(--primary); font-size: 1.5rem; line-height: 1;">&#8226;</span>
+            <p style="text-align: left; font-size: 1.05rem; color: var(--text);"><strong style="color: var(--primary);">D autonomous:</strong> let it run, keep the gate, promote on earned trust.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Slide 3: The Context Problem -->
+    <section class="slide" id="context-problem">
+      <h2>The Hardest Problem in Agentic Systems is Not Intelligence — It's Context</h2>
+
+      <div class="two-col anim-fade">
+        <div>
+          <div class="warning-box" style="margin: 0;">
+            <strong>WHY AGENTIC SYSTEMS FAIL</strong>
+            <p style="margin-top: 0.75rem;">Agents won't fail because models are weak. They will fail because agents don't share the same truth and therefore <strong style="color: var(--text);">disagree</strong> or have <strong style="color: var(--text);">partial context</strong>.</p>
+            <p style="margin-top: 0.75rem;">Lack of shared governance leads to incoherent actions.</p>
+          </div>
+        </div>
+        <div>
+          <div class="highlight-box" style="margin: 0;">
+            <strong>THE ADVANTAGE</strong>
+            <p style="margin-top: 0.75rem;">Snowflake uniquely solves the multi-agent truth problem: a governed, explainable, cross-domain foundation.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="three-col anim-fade" style="margin-top: 1.5rem;">
+        <div class="card" style="border-top: 3px solid var(--primary); text-align: center;">
+          <h4>AGREE ON REALITY</h4>
+          <p style="text-align: center;">Shared semantic models across all agents</p>
+          <p style="margin-top: 0.75rem;"><span class="badge-blue">Artist Data</span> <span class="badge-blue">Streaming Context</span></p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent); text-align: center;">
+          <h4>REASON OVER IT</h4>
+          <p style="text-align: center;">Intelligent orchestration with full context</p>
+          <p style="margin-top: 0.75rem;"><span class="badge-purple">Royalties</span> <span class="badge-purple">Platform Mix</span></p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--green); text-align: center;">
+          <h4>ACT COHERENTLY</h4>
+          <p style="text-align: center;">Safe execution within enterprise guardrails</p>
+          <p style="margin-top: 0.75rem;"><span class="badge-green">Governance</span> <span class="badge-green">Audit</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 4: Three Pillars -->
+    <section class="slide" id="three-pillars">
+      <h2>Three Critical Pillars Separate AI Projects From AI Transformation</h2>
+      <h3>Snowflake addresses all three in one platform, reducing Time to Value</h3>
+
+      <div class="three-col anim-fade">
+        <div class="card" style="border-top: 3px solid var(--primary);">
+          <h4>Data &amp; Context</h4>
+          <p><strong style="color: var(--text);">Models don't know your business.</strong></p>
+          <p style="margin-top: 0.5rem;">Without governed, structured + unstructured context, agents <em>hallucinate</em> or <em>miss the metric definition entirely</em>.</p>
+          <p style="margin-top: 0.75rem;"><span class="badge-blue">Control Plane</span></p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent);">
+          <h4>Security &amp; Governance</h4>
+          <p><strong style="color: var(--text);">Trust is not optional.</strong></p>
+          <p style="margin-top: 0.5rem;">Every agent needs the consistent <em>access controls</em> as your users along with policies — not a parallel governance stack.</p>
+          <p style="margin-top: 0.75rem;"><span class="badge-purple">Execution Plane</span></p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--orange);">
+          <h4>Cost / Performance</h4>
+          <p><strong style="color: var(--text);">Scale without bankrupting.</strong></p>
+          <p style="margin-top: 0.5rem;">Runaway tokens and per-person costs balloon when every turn re-discovers your context. Model <em>optionality</em> avoids lock-ins.</p>
+          <p style="margin-top: 0.75rem;"><span class="badge-orange">Operations Plane</span></p>
+        </div>
+      </div>
+
+      <div class="context-box anim-fade">
+        <strong>WHY EFFORTS STALL:</strong> Most organizations address one pillar while ignoring the other two. Snowflake provides a single platform that delivers governed context, enterprise security, and cost control together — so AI projects become AI transformation.
+      </div>
+    </section>
+
+    <!-- Slide 5: Agentic Control Plane -->
+    <section class="slide" id="control-plane">
+      <h2>Snowflake Cortex — The Agentic Control Plane</h2>
+
+      <div class="arch-diagram anim-fade">
+        <div class="layer-label">UX Layer</div>
+        <div class="level">
+          <div class="node node-primary">CoWork<br><small style="color:var(--text-muted);">Business User UX</small></div>
+          <div class="node node-primary">CoCo<br><small style="color:var(--text-muted);">Developer UX</small></div>
+          <div class="node node-primary">Agent Studio<br><small style="color:var(--text-muted);">Build &amp; Deploy</small></div>
+          <div class="node node-primary">Streamlit<br><small style="color:var(--text-muted);">Custom Apps</small></div>
+        </div>
+
+        <div class="arrow">&darr;</div>
+        <div class="layer-label">Intelligence Layer</div>
+        <div class="level">
+          <div class="node node-accent">AI Functions<br><small style="color:var(--text-muted);">AI_COMPLETE, AI_EXTRACT, etc.</small></div>
+          <div class="node node-accent">Cortex Search + Analyst<br><small style="color:var(--text-muted);">Retrieval &amp; NL-to-SQL</small></div>
+          <div class="node node-accent">ML Models<br><small style="color:var(--text-muted);">Train, Deploy, Predict</small></div>
+        </div>
+
+        <div class="arrow">&darr;</div>
+        <div class="layer-label">Domain Knowledge Layer</div>
+        <div class="level">
+          <div class="node node-green">Semantic View<br><small style="color:var(--text-muted);">Business definitions</small></div>
+          <div class="node node-green">MCP &amp; Connectors<br><small style="color:var(--text-muted);">External tools</small></div>
+          <div class="node node-green">All Data<br><small style="color:var(--text-muted);">Structured + Unstructured</small></div>
+          <div class="node node-green">Automated Context Runtime<br><small style="color:var(--text-muted);">Schema injection</small></div>
+        </div>
+
+        <div class="arrow">&darr;</div>
+        <div class="level">
+          <div class="node" style="border-color: var(--border); padding: 0.6rem 3rem; font-size: 0.8rem; width: 100%; text-align: center;">
+            <strong style="color: var(--text-muted);">GOVERNANCE | POLICY CONTROL | AUDIT &amp; LINEAGE</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="highlight-box anim-fade">
+        <strong>Example query:</strong> <em>"What's the average ARPU by tier, and which artists are at risk of churn?"</em> — The UX layer routes to Cortex Analyst, which queries governed tables using the semantic view's business definitions. The response respects RBAC, is audited, and costs are attributed to the calling team.
+      </div>
+    </section>
+
+    <!-- Slide 6: Cortex Code -->
+    <section class="slide" id="cortex-code">
+      <h2>Cortex Code: AI Coding Agent for Data Teams</h2>
+      <h3>From natural language to production-ready code across your entire data stack</h3>
+
+      <div class="two-col anim-fade">
+        <div>
+          <div class="warning-box" style="margin: 0;">
+            <strong>THE CURRENT STATE — Traditional Dev Friction</strong>
+            <ul style="list-style: none; margin-top: 0.75rem; padding: 0;">
+              <li style="font-size: 0.88rem; color: var(--text-muted); padding: 0.35rem 0 0.35rem 1.25rem; position: relative; line-height: 1.5;"><span style="position: absolute; left: 0; top: 0.65rem; width: 6px; height: 6px; border-radius: 50%; background: var(--orange); display: inline-block;"></span><strong style="color:var(--text);">Fragmented Toolchain</strong> — Workflows spanning dbt, Airflow, SQL, and Notebooks create constant context switching.</li>
+              <li style="font-size: 0.88rem; color: var(--text-muted); padding: 0.35rem 0 0.35rem 1.25rem; position: relative; line-height: 1.5;"><span style="position: absolute; left: 0; top: 0.65rem; width: 6px; height: 6px; border-radius: 50%; background: var(--orange); display: inline-block;"></span><strong style="color:var(--text);">Slow Iteration</strong> — Manual refactoring and tribal knowledge slow debugging and deployments.</li>
+              <li style="font-size: 0.88rem; color: var(--text-muted); padding: 0.35rem 0 0.35rem 1.25rem; position: relative; line-height: 1.5;"><span style="position: absolute; left: 0; top: 0.65rem; width: 6px; height: 6px; border-radius: 50%; background: var(--orange); display: inline-block;"></span><strong style="color:var(--text);">Governance Friction</strong> — Access controls and policies bottleneck rapid prototyping.</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="highlight-box" style="margin: 0;">
+            <strong>THE SOLUTION — Context-Aware AI Development</strong>
+            <p style="margin-top: 0.75rem;">From natural language to production-ready code across your entire data stack.</p>
+            <p style="margin-top: 0.75rem;"><span class="badge-blue">CLI</span> <span class="badge-blue">Snowsight</span> <span class="badge-blue">Desktop App</span> <span class="badge-blue">SDK</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 7: CoWork -->
+    <section class="slide" id="cowork">
+      <h2>Snowflake CoWork</h2>
+      <h3>All Your Knowledge. One Trusted Enterprise Agent.</h3>
+
+      <div class="two-col anim-fade">
+        <div>
+          <div class="warning-box" style="margin: 0;">
+            <strong>THE CURRENT STATE — The Dashboard Maze</strong>
+            <ul style="list-style: none; margin-top: 0.75rem; padding: 0;">
+              <li style="font-size: 0.88rem; color: var(--text-muted); padding: 0.35rem 0 0.35rem 1.25rem; position: relative; line-height: 1.5;"><span style="position: absolute; left: 0; top: 0.65rem; width: 6px; height: 6px; border-radius: 50%; background: var(--orange); display: inline-block;"></span><strong style="color:var(--text);">Fragmented Insights</strong> — Users navigate a confusing maze of static dashboards and reports.</li>
+              <li style="font-size: 0.88rem; color: var(--text-muted); padding: 0.35rem 0 0.35rem 1.25rem; position: relative; line-height: 1.5;"><span style="position: absolute; left: 0; top: 0.65rem; width: 6px; height: 6px; border-radius: 50%; background: var(--orange); display: inline-block;"></span><strong style="color:var(--text);">Data Bottlenecks</strong> — Data teams are overwhelmed with ad hoc requests; insights arrive days late.</li>
+              <li style="font-size: 0.88rem; color: var(--text-muted); padding: 0.35rem 0 0.35rem 1.25rem; position: relative; line-height: 1.5;"><span style="position: absolute; left: 0; top: 0.65rem; width: 6px; height: 6px; border-radius: 50%; background: var(--orange); display: inline-block;"></span><strong style="color:var(--text);">More Questions</strong> — Static reports often raise more questions than they answer.</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="highlight-box" style="margin: 0;">
+            <strong>THE SHIFT — Conversational Intelligence</strong>
+            <p style="margin-top: 0.75rem;">Snowflake CoWork agents reason through data to surface what matters, deliver briefs, and recommend actions. It democratizes intelligence.</p>
+            <p style="margin-top: 1rem;"><span class="badge-blue">Agents</span> <span class="badge-blue">Cortex Analyst</span> <span class="badge-blue">Cortex Search</span> <span class="badge-purple">MCP</span> <span class="badge-purple">Skills</span></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="context-box anim-fade">
+        <strong>KEY CAPABILITY:</strong> CoWork agents connect to your governed data via Cortex Analyst and Cortex Search — delivering real-time, conversational answers grounded in your semantic models. No more waiting on the data team for ad hoc queries.
+      </div>
+    </section>
+
+    <!-- Slide 8: Demos -->
+    <section class="slide" id="demos">
+      <h2>Live Demos</h2>
+      <h3>Two live demos built on customer data already in Snowflake</h3>
+
+      <div class="two-col anim-fade">
+        <div class="card" style="border-top: 3px solid var(--primary);">
+          <h4 style="font-size: 1.1rem; margin-bottom: 0.75rem;">1. Simplified Amplitude</h4>
+          <p><span class="badge-blue">Leadership</span> <span class="badge-blue">IC Engineers</span></p>
+          <p style="margin-top: 0.75rem;"><strong style="color: var(--text);">The Problem:</strong> Engineers now own features end-to-end and need to understand which product features users interact with. Amplitude requires significant ramp-up time, especially for non-PMs.</p>
+          <p style="margin-top: 0.75rem;"><strong style="color: var(--text);">The Solution:</strong> A simpler, conversational interface over Amplitude event data already ingested into Snowflake — powered by Cortex AI. Anyone can ask product usage questions in natural language without learning Amplitude's UI.</p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent);">
+          <h4 style="font-size: 1.1rem; margin-bottom: 0.75rem;">2. ARPU Intelligence Dashboard</h4>
+          <p><span class="badge-purple">Ops Team</span> <span class="badge-purple">Artists</span></p>
+          <p style="margin-top: 0.75rem;"><strong style="color: var(--text);">Internal View:</strong> Streamlit dashboard with ARPU trends by tier, churn risk scoring (ML Classification), revenue anomaly detection, and AI-generated recommendations per artist.</p>
+          <p style="margin-top: 0.75rem;"><strong style="color: var(--text);">External View:</strong> Cortex Agent that lets artists ask questions about their own streaming data, royalties, and growth opportunities — governed by RBAC so each artist sees only their data.</p>
+        </div>
+      </div>
+
+      <div class="highlight-box anim-fade">
+        <strong>What ties them together:</strong> Both demos use data already in Snowflake, require zero data movement, and layer Cortex AI (Search, Analyst, ML, AI_COMPLETE) on top of governed tables — showing a path from raw event data to self-service intelligence in days, not quarters.
+      </div>
+    </section>
+
+    <!-- Slide 9: ARPU Demo Deep Dive -->
+    <section class="slide" id="arpu-demo">
+      <h2>ARPU Intelligence: How It Works</h2>
+      <h3>Four layers powering internal ops dashboards and an external artist-facing agent</h3>
+
+      <!-- Architecture Diagram -->
+      <div class="anim-fade" style="width: 100%; max-width: 850px; margin: 1.5rem auto;">
+
+        <!-- Data Layer -->
+        <div style="background: rgba(41,181,232,0.05); border: 1px solid var(--border); border-radius: 12px 12px 0 0; padding: 1.25rem 1.5rem;">
+          <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--primary); margin-bottom: 0.75rem;">Data Layer</div>
+          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.5rem; text-align: center; min-width: 140px;">
+              <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);">ARTISTS</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Profiles, tiers, genres</div>
+            </div>
+            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.5rem; text-align: center; min-width: 140px;">
+              <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);">TRANSACTIONS</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Streams, royalties, payouts</div>
+            </div>
+            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.5rem; text-align: center; min-width: 140px;">
+              <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);">FEATURE ADOPTION</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Product usage signals</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Arrow -->
+        <div style="text-align: center; color: var(--text-muted); font-size: 1.2rem; padding: 0.3rem 0;">&darr;</div>
+
+        <!-- Intelligence Layer -->
+        <div style="background: rgba(124,58,237,0.05); border: 1px solid var(--border); padding: 1.25rem 1.5rem;">
+          <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 0.75rem;">Intelligence Layer</div>
+          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.5rem; text-align: center; min-width: 140px;">
+              <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);">ML Models</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Forecast, Anomaly, Classification</div>
+            </div>
+            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.5rem; text-align: center; min-width: 140px;">
+              <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);">Cortex Analyst</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Text-to-SQL via Semantic Model</div>
+            </div>
+            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.5rem; text-align: center; min-width: 140px;">
+              <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);">AI_COMPLETE</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Recommendations &amp; insights</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Arrow -->
+        <div style="text-align: center; color: var(--text-muted); font-size: 1.2rem; padding: 0.3rem 0;">&darr;</div>
+
+        <!-- Frontend Layer -->
+        <div style="background: rgba(16,185,129,0.05); border: 1px solid var(--border); border-radius: 0 0 12px 12px; padding: 1.25rem 1.5rem;">
+          <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--green); margin-bottom: 0.75rem;">Frontend Layer</div>
+          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.5rem; text-align: center; min-width: 160px;">
+              <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);">Streamlit Dashboard</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Internal ops team view</div>
+            </div>
+            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.5rem; text-align: center; min-width: 160px;">
+              <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);">Cortex Agent</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">External artist-facing chat</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detail Cards -->
+      <div class="two-col anim-fade" style="margin-top: 1.5rem;">
+        <div class="card">
+          <h4>What We Built</h4>
+          <p style="margin-top: 0.5rem;">A complete ARPU intelligence environment: synthetic artist data modeled after the customer's schema, ML models for churn scoring and revenue forecasting, a Streamlit dashboard with AI-generated recommendations, and a Cortex Agent artists can talk to about their own data.</p>
+        </div>
+        <div class="card">
+          <h4>Snowflake Capabilities Used</h4>
+          <p style="margin-top: 0.5rem;">
+            <span class="badge-blue">ML FORECAST</span>
+            <span class="badge-blue">ANOMALY_DETECTION</span>
+            <span class="badge-blue">AI_COMPLETE</span>
+            <span class="badge-blue">Cortex Analyst</span>
+            <span class="badge-blue">Cortex Search</span>
+            <span class="badge-blue">Cortex Agent</span>
+            <span class="badge-blue">Streamlit in Snowflake</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="two-col anim-fade">
+        <div class="card">
+          <h4>Internal Dashboard (Ops Team)</h4>
+          <p style="margin-top: 0.5rem;">ARPU trends by tier, platform revenue breakdown, churn risk scatter plot, high-risk artist table with AI recommendations, and a natural language "Ask Your Data" tab powered by text-to-SQL.</p>
+        </div>
+        <div class="card">
+          <h4>External Agent (Artists)</h4>
+          <p style="margin-top: 0.5rem;">Artists ask questions about their streams, royalties, and growth in plain English. The agent uses Cortex Analyst for structured queries, Cortex Search for FAQs, and RBAC ensures each artist sees only their own data.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    window.addEventListener('scroll', function() {
+      var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      var scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      var progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+      document.getElementById('progress').style.width = progress + '%';
+    });
+
+    var sections = document.querySelectorAll('section[id]');
+    var navLinks = document.querySelectorAll('.sidebar a');
+    var spyObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          navLinks.forEach(function(link) {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + entry.target.id) { link.classList.add('active'); }
+          });
+        }
+      });
+    }, { threshold: 0.35 });
+    sections.forEach(function(s) { spyObserver.observe(s); });
+
+    var animElements = document.querySelectorAll('.anim-fade');
+    var animObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) { if (entry.isIntersecting) { entry.target.classList.add('visible'); } });
+    }, { threshold: 0.08 });
+    animElements.forEach(function(el) { animObserver.observe(el); });
+  </script>
+
+</body>
+</html>
