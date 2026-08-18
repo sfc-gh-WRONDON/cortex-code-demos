@@ -18,8 +18,7 @@
       {"id":"control-plane","title":"Agentic Control Plane"},
       {"id":"cortex-code","title":"Cortex Code"},
       {"id":"cowork","title":"Snowflake CoWork"},
-      {"id":"demos","title":"Live Demos"},
-      {"id":"arpu-demo","title":"ARPU Demo Deep Dive"}
+      {"id":"demos","title":"Live Demos"}
     ]
   }
   </script>
@@ -151,7 +150,6 @@
     <a href="#cortex-code">Cortex Code</a>
     <a href="#cowork">CoWork</a>
     <a href="#demos">Demos</a>
-    <a href="#arpu-demo">ARPU Deep Dive</a>
   </nav>
 
   <main class="main">
@@ -174,7 +172,7 @@
         <div class="agenda-item"><div class="num">2</div><div class="title">The Context Problem &amp; Three Pillars</div></div>
         <div class="agenda-item"><div class="num">3</div><div class="title">Snowflake Cortex — The Agentic Control Plane</div></div>
         <div class="agenda-item"><div class="num">4</div><div class="title">Cortex Code &amp; CoWork</div></div>
-        <div class="agenda-item"><div class="num">5</div><div class="title">Live Demos — Simplified Amplitude &amp; ARPU Intelligence</div></div>
+        <div class="agenda-item"><div class="num">5</div><div class="title">Live Cortex Code Demo</div></div>
       </div>
     </section>
 
@@ -377,125 +375,25 @@
 
     <!-- Slide 8: Demos -->
     <section class="slide" id="demos">
-      <h2>Live Demos</h2>
-      <h3>Two live demos built on customer data already in Snowflake</h3>
+      <h2>Live Demo</h2>
+      <h3>Cortex Code in action — built on your data, inside Snowflake</h3>
 
-      <div class="two-col anim-fade">
-        <div class="card" style="border-top: 3px solid var(--primary);">
-          <h4 style="font-size: 1.1rem; margin-bottom: 0.75rem;">1. Simplified Amplitude</h4>
-          <p><span class="badge-blue">Leadership</span> <span class="badge-blue">IC Engineers</span></p>
-          <p style="margin-top: 0.75rem;"><strong style="color: var(--text);">The Problem:</strong> Engineers now own features end-to-end and need to understand which product features users interact with. Amplitude requires significant ramp-up time, especially for non-PMs.</p>
-          <p style="margin-top: 0.75rem;"><strong style="color: var(--text);">The Solution:</strong> A simpler, conversational interface over Amplitude event data already ingested into Snowflake — powered by Cortex AI. Anyone can ask product usage questions in natural language without learning Amplitude's UI.</p>
-        </div>
-        <div class="card" style="border-top: 3px solid var(--accent);">
-          <h4 style="font-size: 1.1rem; margin-bottom: 0.75rem;">2. ARPU Intelligence Dashboard</h4>
-          <p><span class="badge-purple">Ops Team</span> <span class="badge-purple">Artists</span></p>
-          <p style="margin-top: 0.75rem;"><strong style="color: var(--text);">Internal View:</strong> Streamlit dashboard with ARPU trends by tier, churn risk scoring (ML Classification), revenue anomaly detection, and AI-generated recommendations per artist.</p>
-          <p style="margin-top: 0.75rem;"><strong style="color: var(--text);">External View:</strong> Cortex Agent that lets artists ask questions about their own streaming data, royalties, and growth opportunities — governed by RBAC so each artist sees only their data.</p>
-        </div>
+      <div class="highlight-box anim-fade" style="max-width: 700px; text-align: center; margin: 2rem auto;">
+        <p style="font-size: 1.1rem; color: var(--text); line-height: 1.8;">We'll walk through a live <strong style="color: var(--primary);">Cortex Code demo</strong> showing how your team can build AI-powered data applications — including ML models, intelligent dashboards, and conversational agents — without leaving Snowflake.</p>
       </div>
 
-      <div class="highlight-box anim-fade">
-        <strong>What ties them together:</strong> Both demos use data already in Snowflake, require zero data movement, and layer Cortex AI (Search, Analyst, ML, AI_COMPLETE) on top of governed tables — showing a path from raw event data to self-service intelligence in days, not quarters.
-      </div>
-    </section>
-
-    <!-- Slide 9: ARPU Demo Deep Dive -->
-    <section class="slide" id="arpu-demo">
-      <h2>ARPU Intelligence: How It Works</h2>
-      <h3>Four layers powering internal ops dashboards and an external artist-facing agent</h3>
-
-      <!-- Architecture Diagram -->
-      <div class="anim-fade" style="width: 100%; max-width: 850px; margin: 1.5rem auto;">
-
-        <!-- Data Layer -->
-        <div style="background: rgba(41,181,232,0.05); border: 1px solid var(--border); border-radius: 12px 12px 0 0; padding: 1.25rem 1.5rem;">
-          <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--primary); margin-bottom: 0.75rem;">Data Layer</div>
-          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.5rem; text-align: center; min-width: 140px;">
-              <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);">ARTISTS</div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Profiles, tiers, genres</div>
-            </div>
-            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.5rem; text-align: center; min-width: 140px;">
-              <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);">TRANSACTIONS</div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Streams, royalties, payouts</div>
-            </div>
-            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.5rem; text-align: center; min-width: 140px;">
-              <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);">FEATURE ADOPTION</div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Product usage signals</div>
-            </div>
-          </div>
+      <div class="three-col anim-fade" style="margin-top: 1.5rem;">
+        <div class="card" style="border-top: 3px solid var(--primary); text-align: center;">
+          <h4>Build Faster</h4>
+          <p style="text-align: center;">Natural language to production-ready SQL, Python, and dbt — in seconds</p>
         </div>
-
-        <!-- Arrow -->
-        <div style="text-align: center; color: var(--text-muted); font-size: 1.2rem; padding: 0.3rem 0;">&darr;</div>
-
-        <!-- Intelligence Layer -->
-        <div style="background: rgba(124,58,237,0.05); border: 1px solid var(--border); padding: 1.25rem 1.5rem;">
-          <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 0.75rem;">Intelligence Layer</div>
-          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.5rem; text-align: center; min-width: 140px;">
-              <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);">ML Models</div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Forecast, Anomaly, Classification</div>
-            </div>
-            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.5rem; text-align: center; min-width: 140px;">
-              <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);">Cortex Analyst</div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Text-to-SQL via Semantic Model</div>
-            </div>
-            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.5rem; text-align: center; min-width: 140px;">
-              <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);">AI_COMPLETE</div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Recommendations &amp; insights</div>
-            </div>
-          </div>
+        <div class="card" style="border-top: 3px solid var(--accent); text-align: center;">
+          <h4>Stay in Snowflake</h4>
+          <p style="text-align: center;">ML, AI, agents, and apps all run natively — no external tools or data movement</p>
         </div>
-
-        <!-- Arrow -->
-        <div style="text-align: center; color: var(--text-muted); font-size: 1.2rem; padding: 0.3rem 0;">&darr;</div>
-
-        <!-- Frontend Layer -->
-        <div style="background: rgba(16,185,129,0.05); border: 1px solid var(--border); border-radius: 0 0 12px 12px; padding: 1.25rem 1.5rem;">
-          <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--green); margin-bottom: 0.75rem;">Frontend Layer</div>
-          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.5rem; text-align: center; min-width: 160px;">
-              <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);">Streamlit Dashboard</div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Internal ops team view</div>
-            </div>
-            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.5rem; text-align: center; min-width: 160px;">
-              <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);">Cortex Agent</div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">External artist-facing chat</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Detail Cards -->
-      <div class="two-col anim-fade" style="margin-top: 1.5rem;">
-        <div class="card">
-          <h4>What We Built</h4>
-          <p style="margin-top: 0.5rem;">A complete ARPU intelligence environment: synthetic artist data modeled after the customer's schema, ML models for churn scoring and revenue forecasting, a Streamlit dashboard with AI-generated recommendations, and a Cortex Agent artists can talk to about their own data.</p>
-        </div>
-        <div class="card">
-          <h4>Snowflake Capabilities Used</h4>
-          <p style="margin-top: 0.5rem;">
-            <span class="badge-blue">ML FORECAST</span>
-            <span class="badge-blue">ANOMALY_DETECTION</span>
-            <span class="badge-blue">AI_COMPLETE</span>
-            <span class="badge-blue">Cortex Analyst</span>
-            <span class="badge-blue">Cortex Search</span>
-            <span class="badge-blue">Cortex Agent</span>
-            <span class="badge-blue">Streamlit in Snowflake</span>
-          </p>
-        </div>
-      </div>
-
-      <div class="two-col anim-fade">
-        <div class="card">
-          <h4>Internal Dashboard (Ops Team)</h4>
-          <p style="margin-top: 0.5rem;">ARPU trends by tier, platform revenue breakdown, churn risk scatter plot, high-risk artist table with AI recommendations, and a natural language "Ask Your Data" tab powered by text-to-SQL.</p>
-        </div>
-        <div class="card">
-          <h4>External Agent (Artists)</h4>
-          <p style="margin-top: 0.5rem;">Artists ask questions about their streams, royalties, and growth in plain English. The agent uses Cortex Analyst for structured queries, Cortex Search for FAQs, and RBAC ensures each artist sees only their own data.</p>
+        <div class="card" style="border-top: 3px solid var(--green); text-align: center;">
+          <h4>Governed by Default</h4>
+          <p style="text-align: center;">Every output respects your existing RBAC, audit, and cost controls</p>
         </div>
       </div>
     </section>
