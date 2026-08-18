@@ -51,3 +51,47 @@ rm -f models/staging/*.sql models/staging/schema.yml models/marts/*
 ### Talk Track
 
 See [Notes_v3.md](Notes_v3.md) for the full timed demo script with what to say, what to show, and what to prompt.
+
+---
+
+## ARPU Intelligence — Cortex AI & ML for Creator Platforms
+
+A demo for music/creator distribution platforms showcasing Snowflake ML, Cortex AI, and Streamlit:
+
+1. **ML Models** — FORECAST and ANOMALY_DETECTION trained on artist revenue data
+2. **AI Recommendations** — AI_COMPLETE generating personalized artist actions
+3. **Cortex Analyst** — Text-to-SQL via a semantic model for natural language queries
+4. **Cortex Agent** — Multi-tool agent combining Analyst + Search for artist self-service
+5. **Streamlit in Snowflake** — Internal ops dashboard with 6 tabs
+
+### Quick Start
+
+```sql
+-- 1. Open arpu-intelligence/setup/setup.sql and set variables at the top
+SET demo_db = 'ARPU_INTELLIGENCE_DEMO';
+SET demo_wh = 'COMPUTE_WH';
+
+-- 2. Run setup/setup.sql in Snowsight (creates all objects + synthetic data)
+-- 3. Open Snowsight > Projects > Streamlit > ARPU_INTELLIGENCE
+```
+
+### Project Structure
+
+```
+arpu-intelligence/
+├── SKILL.md                     — CoCo context for extending the demo
+├── setup/setup.sql              — Full DDL, data generation, ML model training
+├── streamlit/streamlit_app.py   — 6-tab ops dashboard (ARPU, Churn, Forecasts, AI Recs)
+├── agent/semantic_model.yaml    — Cortex Analyst semantic model
+└── notebook/ml_pipeline_walkthrough.ipynb — ML pipeline walkthrough
+```
+
+### Prerequisites
+
+- Snowflake account with ACCOUNTADMIN role
+- Medium standard warehouse
+- No pre-existing data required — `setup.sql` generates all synthetic data
+
+### Talk Track
+
+See [arpu-intelligence/README.md](arpu-intelligence/README.md) for the full demo guide and sample questions.

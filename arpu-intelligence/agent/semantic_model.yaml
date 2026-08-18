@@ -1,0 +1,255 @@
+name: arpu_intelligence_analytics
+description: >
+  Semantic model for music platform artist analytics. Enables artists to query their streaming performance,
+  royalties, platform breakdown, and ML-powered insights through natural language.
+
+tables:
+  - name: transactions
+    description: Monthly streaming transactions per artist per platform with royalty calculations
+    base_table:
+      database: ARPU_INTELLIGENCE_DEMO
+      schema: RAW
+      table: TRANSACTIONS
+    dimensions:
+      - name: artist_id
+        description: Unique artist identifier
+        expr: artist_id
+        data_type: VARCHAR
+      - name: platform
+        description: Streaming platform name (Spotify, Apple Music, YouTube Music, Amazon Music, TikTok, Tidal)
+        expr: platform
+        data_type: VARCHAR
+        sample_values:
+          - Spotify
+          - Apple Music
+          - YouTube Music
+          - Amazon Music
+          - TikTok
+          - Tidal
+      - name: period_month
+        description: The month of the transaction
+        expr: period_month
+        data_type: DATE
+    time_dimensions:
+      - name: transaction_month
+        description: Month of the streaming transaction
+        expr: period_month
+        data_type: DATE
+    measures:
+      - name: total_streams
+        description: Total number of streams
+        expr: stream_count
+        default_aggregation: sum
+        data_type: NUMBER
+      - name: total_royalties
+        description: Total royalty earnings in USD
+        expr: royalty_usd
+        default_aggregation: sum
+        data_type: FLOAT
+      - name: total_net_payout
+        description: Net payout after distribution fees in USD
+        expr: net_payout_usd
+        default_aggregation: sum
+        data_type: FLOAT
+      - name: avg_royalty_per_stream
+        description: Average royalty earned per individual stream
+        expr: royalty_usd / NULLIF(stream_count, 0)
+        default_aggregation: avg
+        data_type: FLOAT
+
+  - name: artists
+    description: Artist profile information including tier, genre, and demographics
+    base_table:
+      database: ARPU_INTELLIGENCE_DEMO
+      schema: RAW
+      table: ARTISTS
+    dimensions:
+      - name: artist_id
+        description: Unique artist identifier
+        expr: artist_id
+        data_type: VARCHAR
+      - name: artist_name
+        description: Name of the artist
+        expr: artist_name
+        data_type: VARCHAR
+      - name: genre
+        description: Primary genre of the artist
+        expr: genre
+        data_type: VARCHAR
+        sample_values:
+          - Hip-Hop
+          - R&B
+          - Pop
+          - Latin
+          - Afrobeats
+          - Country
+          - Rock
+          - Electronic
+      - name: tier
+        description: Artist subscription tier (Free, Select, Pro)
+        expr: tier
+        data_type: VARCHAR
+        sample_values:
+          - Free
+          - Select
+          - Pro
+      - name: country
+        description: Artist's country of origin
+        expr: country
+        data_type: VARCHAR
+    measures:
+      - name: monthly_listeners
+        description: Current monthly listener count
+        expr: monthly_listeners
+        default_aggregation: sum
+        data_type: NUMBER
+      - name: catalog_size
+        description: Number of tracks in artist's catalog
+        expr: catalog_size
+        default_aggregation: sum
+        data_type: NUMBER
+
+  - name: feature_adoption
+    description: Which platform features each artist has adopted and their activity level
+    base_table:
+      database: ARPU_INTELLIGENCE_DEMO
+      schema: RAW
+      table: FEATURE_ADOPTION
+    dimensions:
+      - name: artist_id
+        description: Unique artist identifier
+        expr: artist_id
+        data_type: VARCHAR
+      - name: feature_name
+        description: Name of the platform feature
+        expr: feature_name
+        data_type: VARCHAR
+        sample_values:
+          - Smart Links
+          - Analytics Dashboard
+          - Playlist Pitching
+          - Distribution Plus
+          - Social Clip Tool
+          - Sync Licensing
+      - name: is_active_user
+        description: Whether the artist actively uses this feature
+        expr: is_active_user
+        data_type: BOOLEAN
+    measures:
+      - name: sessions_last_30d
+        description: Number of feature usage sessions in the last 30 days
+        expr: sessions_last_30d
+        default_aggregation: sum
+        data_type: NUMBER
+
+  - name: predictions
+    description: ML model predictions including churn risk, ARPU forecast, and feature recommendations
+    base_table:
+      database: ARPU_INTELLIGENCE_DEMO
+      schema: ML
+      table: PREDICTIONS
+    dimensions:
+      - name: artist_id
+        description: Unique artist identifier
+        expr: artist_id
+        data_type: VARCHAR
+      - name: churn_risk_label
+        description: Predicted churn risk category (Low, Medium, High)
+        expr: churn_risk_label
+        data_type: VARCHAR
+        sample_values:
+          - Low
+          - Medium
+          - High
+      - name: top_recommended_feature
+        description: The feature predicted to have the highest revenue impact for this artist
+        expr: top_recommended_feature
+        data_type: VARCHAR
+    measures:
+      - name: churn_score
+        description: Probability of artist churning (0 to 1)
+        expr: churn_score
+        default_aggregation: avg
+        data_type: FLOAT
+      - name: arpu_forecast_90d
+        description: Predicted ARPU over the next 90 days
+        expr: arpu_forecast_next_90d
+        default_aggregation: sum
+        data_type: FLOAT
+      - name: forecast_lift_pct
+        description: Predicted percentage revenue lift if recommended feature is adopted
+        expr: forecast_lift_pct
+        default_aggregation: avg
+        data_type: NUMBER
+
+relationships:
+  - name: transactions_to_artists
+    left_table: transactions
+    right_table: artists
+    join_type: left
+    relationship_type: many_to_one
+    relationship_columns:
+      - left_column: artist_id
+        right_column: artist_id
+
+  - name: predictions_to_artists
+    left_table: predictions
+    right_table: artists
+    join_type: left
+    relationship_type: one_to_one
+    relationship_columns:
+      - left_column: artist_id
+        right_column: artist_id
+
+  - name: feature_adoption_to_artists
+    left_table: feature_adoption
+    right_table: artists
+    join_type: left
+    relationship_type: many_to_one
+    relationship_columns:
+      - left_column: artist_id
+        right_column: artist_id
+
+verified_queries:
+  - name: total_streams_by_platform
+    question: How many streams do I have by platform?
+    sql: |
+      SELECT t.platform, SUM(t.stream_count) AS total_streams, SUM(t.net_payout_usd) AS total_payout
+      FROM ARPU_INTELLIGENCE_DEMO.RAW.TRANSACTIONS t
+      GROUP BY t.platform
+      ORDER BY total_streams DESC
+
+  - name: monthly_earnings_trend
+    question: What are my monthly earnings?
+    sql: |
+      SELECT t.period_month, SUM(t.net_payout_usd) AS earnings
+      FROM ARPU_INTELLIGENCE_DEMO.RAW.TRANSACTIONS t
+      GROUP BY t.period_month
+      ORDER BY t.period_month
+
+  - name: top_earning_artists
+    question: Who are the top earning artists?
+    sql: |
+      SELECT a.artist_name, a.genre, a.tier, SUM(t.net_payout_usd) AS total_earnings
+      FROM ARPU_INTELLIGENCE_DEMO.RAW.TRANSACTIONS t
+      JOIN ARPU_INTELLIGENCE_DEMO.RAW.ARTISTS a ON a.artist_id = t.artist_id
+      GROUP BY a.artist_name, a.genre, a.tier
+      ORDER BY total_earnings DESC
+      LIMIT 20
+
+  - name: feature_adoption_by_tier
+    question: What features are most popular by tier?
+    sql: |
+      SELECT a.tier, fa.feature_name, COUNT(DISTINCT fa.artist_id) AS artists_using
+      FROM ARPU_INTELLIGENCE_DEMO.RAW.FEATURE_ADOPTION fa
+      JOIN ARPU_INTELLIGENCE_DEMO.RAW.ARTISTS a ON a.artist_id = fa.artist_id
+      GROUP BY a.tier, fa.feature_name
+      ORDER BY a.tier, artists_using DESC
+
+  - name: churn_risk_summary
+    question: How many artists are at high churn risk?
+    sql: |
+      SELECT p.churn_risk_label, COUNT(*) AS artist_count, ROUND(AVG(p.churn_score), 3) AS avg_score
+      FROM ARPU_INTELLIGENCE_DEMO.ML.PREDICTIONS p
+      GROUP BY p.churn_risk_label
+      ORDER BY avg_score DESC
